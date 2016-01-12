@@ -551,6 +551,13 @@ class Sample(BaseFolder, HistoryAwareMixin):
     def getSamplingWorkflowEnabledDefault(self):
         return self.bika_setup.getSamplingWorkflowEnabled()
 
+    def getSampleTypeTitle(self):
+        """Return title of sample's SampleType
+        """
+        sampletype = self.getSampleType()
+        st_title = sampletype.Title() if sampletype else ''
+        return st_title
+
     def getContactTitle(self):
         return ""
 
