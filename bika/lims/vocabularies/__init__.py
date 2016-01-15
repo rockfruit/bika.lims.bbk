@@ -498,10 +498,29 @@ def getStickerTemplates():
             {'id': 'my.product:EAN128_default_small.pt',
              'title': 'my.product: EAN128 default small'}
     """
-    # Retrieve the templates from bika.lims add-on
-    resdirname = 'stickers'
-    p = os.path.join("browser", "templates", resdirname)
-    return getTemplates(p, resdirname)
+    templates = []
+    # Retrieve the templates from all registered 'stickers' resource
+    # directories, including bika.lims as one of them
+    for templates_resource in iterDirectoriesOfType('stickers'):
+        prefix = templates_resource.__name__
+        dirlist = templates_resource.listDirectory()
+        exts = ['{0}:{1}'.format(prefix, tpl) for tpl in dirlist if
+                tpl.endswith('.pt')]
+        templates.extend(exts)
+
+    # generate expected output as list of dictionaries.
+    out = []
+    templates.sort()
+    for template in templates:
+        title = template[:-3]
+        # We dont want to display "bika.lims:" for built-in stickers
+        title = title.replace('bika.lims:', '')
+        title = title.replace('_', ' ')
+        title = title.replace(':', ': ')
+        out.append({'id': template,
+                    'title': title})
+
+    return out
 
 
 class StickerTemplatesVocabulary(object):
