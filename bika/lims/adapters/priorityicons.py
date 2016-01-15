@@ -15,7 +15,7 @@ class PriorityIcons(object):
         if not hasattr(self.context, 'getPriority'):
             return {}
         priority = self.context.getPriority()
-        if priority:
+        if priority and hasattr(priority, 'portal_type') and priority.portal_type == 'ARPriority':
             result = {
                 'msg': priority.Title(),
                 'field': 'Priority',
