@@ -100,16 +100,29 @@ class WorksheetWorkflowAction(WorkflowAction):
                 return
 
             selected_analyses = WorkflowAction._get_selected_items(self)
-            selected_analysis_uids = selected_analyses.keys()
-
             if selected_analyses:
-                for uid in selected_analysis_uids:
-                    analysis = rc.lookupObject(uid)
-                    # Double-check the state first
-                    if (workflow.getInfoFor(analysis, 'worksheetanalysis_review_state') == 'unassigned'
-                    and workflow.getInfoFor(analysis, 'review_state') == 'sample_received'
-                    and workflow.getInfoFor(analysis, 'cancellation_state') == 'active'):
-                        self.context.addAnalysis(analysis)
+
+                # Group the selected analyses by AR ID
+                analyses_by_ar_id = {}
+                for uid, analysis in selected_analyses.items():
+                    ar_id = analysis.aq_parent.id
+                    if ar_id not in analyses_by_ar_id:
+                        analyses_by_ar_id[ar_id] = []
+                    analyses_by_ar_id[ar_id].append(analysis)
+
+                # Add analyses to the worksheet, in AR ID order
+                ar_ids = analyses_by_ar_id.keys()
+                ar_ids.sort()
+                for ar_id in ar_ids:
+                    analyses = analyses_by_ar_id[ar_id]
+                    analyses.sort(cmp=lambda x,y:cmp(x.getRequestID(),
+                                                     y.getRequestID()))
+                    for analysis in analyses:
+                        # Double-check the state first
+                        if (workflow.getInfoFor(analysis, 'worksheetanalysis_review_state') == 'unassigned'
+                        and workflow.getInfoFor(analysis, 'review_state') == 'sample_received'
+                        and workflow.getInfoFor(analysis, 'cancellation_state') == 'active'):
+                            self.context.addAnalysis(analysis)
 
             self.destination_url = self.context.absolute_url()
             self.request.response.redirect(self.destination_url)
