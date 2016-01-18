@@ -27,6 +27,9 @@ class Sticker(BrowserView):
         else:
             self.items = [self.context,]
 
+        # Be sure the items are sorted by ID before printing
+        self.items.sort(cmp=lambda x,y:cmp(x.id, y.id))
+
         new_items = []
         for i in self.items:
             outitems = self._populateItems(i)
@@ -76,11 +79,9 @@ class Sticker(BrowserView):
             parts = sample.objectValues('SamplePartition')
         elif item.portal_type == 'Sample':
             sample = item
-            ar = sample.getAnalysisRequests()[0]
             parts = sample.objectValues('SamplePartition')
         elif item.portal_type == 'SamplePartition':
             sample = item.aq_parent
-            ar = sample.getAnalysisRequests()[0]
             parts = [item,]
         elif item.portal_type == 'ReferenceSample':
             sample = item
