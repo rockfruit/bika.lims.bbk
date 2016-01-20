@@ -201,10 +201,11 @@ function CalculationUtils() {
                             decimals = result.result_str.split('.')[1].length;
                         }
                         var result_with_decimals = ""
-                        if (result.result_str != ""){
-                            result_with_decimals = parseFloat(result.result_str).toFixed(decimals)
+                        if (result.result != ""){
+                            result_with_decimals = parseFloat(result.result).toFixed(result.formatted_results)
                         };
-                        $("input[uid='"+result.uid+"']").filter("input[field='Result']").val(result_with_decimals);
+                        // result_with_decimals wrongly strips calculation values that are not floatable, right out of the result.
+                        $("input[uid='"+result.uid+"']").filter("input[field='Result']").val(result.formatted_result);
 
                         $('[type="hidden"]').filter("[field='ResultDM']").filter("[uid='"+result.uid+"']").val(result.dry_result);
                         $($('[type="hidden"]').filter("[field='ResultDM']").filter("[uid='"+result.uid+"']").siblings()[0]).empty().append(result.dry_result);

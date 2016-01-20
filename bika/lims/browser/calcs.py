@@ -151,6 +151,7 @@ class ajaxCalculateAnalysisEntry(BrowserView):
                 # is blank or unavailable, so we set blank result and abort.
                 self.results.append({'uid': uid,
                                      'result': '',
+                                     'result_str':'',
                                      'formatted_result': ''})
                 return None
 
@@ -162,6 +163,7 @@ class ajaxCalculateAnalysisEntry(BrowserView):
                     if i_uid == uid and i['value'] == '':
                         self.results.append({'uid': uid,
                                              'result': '',
+                                             'result_str':'',
                                              'formatted_result': ''})
                         return None
                     # All interims must be float, or they are ignored.
