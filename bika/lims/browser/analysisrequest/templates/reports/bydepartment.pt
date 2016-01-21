@@ -182,8 +182,8 @@
             <td tal:content="sample/sample_type/title|nothing"></td>
         </tr>
         <tr>
-            <td class="label" i18n:translate="">Specification</td>
-            <td tal:content="specifications/title|nothing"></td>
+            <td class="label" i18n:translate="">Tank Nr</td>
+            <td tal:content="python:analysisrequest['obj'].Schema().getField('Tank').get(analysisrequest['obj'])"></td>
         </tr>
         <tr>
             <td class="label" i18n:translate="">Date Received</td>
