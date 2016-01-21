@@ -64,7 +64,6 @@ class SupplyOrderFolderView(BikaListingView):
 
     def folderitems(self):
         items = BikaListingView.folderitems(self)
-        items.sort(key=itemgetter('OrderDate'), reverse=True)
         for x in range(len(items)):
             if not items[x].has_key('obj'): continue
             obj = items[x]['obj']
