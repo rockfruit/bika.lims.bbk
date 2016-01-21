@@ -617,9 +617,8 @@ class Analysis(BaseContent):
             try:
                 ivalue = float(i['value'])
                 mapping[i['keyword']] = ivalue
-            except:
-                # Interim not float, abort
-                return False
+            except ValueError:
+                continue
 
         # Add dependencies results to mapping
         dependencies = self.getDependencies()
