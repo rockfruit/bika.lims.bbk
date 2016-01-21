@@ -109,6 +109,7 @@ class HeaderTableView(BrowserView):
                            'html': ''}
             elif field.getType().lower().find('datetime') > -1:
                 value = field.get(self.context)
+                import pdb;pdb.set_trace()
                 ret = {'fieldName': fieldname,
                        'mode': 'structure',
                        'html': self.ulocalized_time(value, long_format=True)

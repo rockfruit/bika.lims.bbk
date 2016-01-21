@@ -922,6 +922,10 @@ function AnalysisRequestAddByCol() {
         var spec_element = $("tr[fieldname='Specification'] td[arnum='" + arnum + "'] input[type='text']")
         var query_str = $(spec_element).attr("search_query")
         var query = $.parseJSON(query_str)
+        // If the Specification field is not visible, no query is present.
+        if (!query){
+            return;
+        }
         if (query.hasOwnProperty("getSampleTypeUID")) {
             delete query.getSampleTypeUID
         }
