@@ -608,7 +608,7 @@ class AnalysisRequestsView(BikaListingView):
         if after_icons:
             item['after']['getRequestID'] = after_icons
 
-        item['Created'] = self.ulocalized_time(obj.created())
+        item['Created'] = self.ulocalized_time(obj.created(), long_format=True)
 
         contact = obj.getContact()
         if contact:
