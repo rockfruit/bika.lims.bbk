@@ -8,7 +8,7 @@
       for="bika.lims.interfaces.ISupplyOrder"
       name="base_edit"
       class="bika.lims.browser.supplyorder.EditView"
-      permission="cmf.ModifyPortalContent"
+      permission="zope2.View"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
@@ -16,7 +16,7 @@
       for="bika.lims.interfaces.ISupplyOrder"
       name="base_view"
       class="bika.lims.browser.supplyorder.View"
-      permission="cmf.ModifyPortalContent"
+      permission="zope2.View"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
@@ -24,7 +24,7 @@
       for="bika.lims.interfaces.ISupplyOrder"
       name="print"
       class="bika.lims.browser.supplyorder.PrintView"
-      permission="cmf.ModifyPortalContent"
+      permission="zope2.View"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
