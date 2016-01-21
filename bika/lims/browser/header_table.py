@@ -73,7 +73,7 @@ class HeaderTableView(BrowserView):
                    'html': adapter(field)}
         else:
             if field.getType().find("ool") > -1:
-                value = field.get(self.context)
+                value = field.getAccessor(self.context)()
                 ret = {'fieldName': fieldname,
                        'mode': 'structure',
                        'html': t(_('Yes')) if value else t(_('No'))
@@ -86,7 +86,7 @@ class HeaderTableView(BrowserView):
                     if callable(fieldaccessor):
                         targets = fieldaccessor()
                 if not targets:
-                    targets = field.get(self.context)
+                    targets = field.getAccessor(self.context)()
 
                 if targets:
                     if not type(targets) == list:
@@ -108,8 +108,7 @@ class HeaderTableView(BrowserView):
                            'mode': 'structure',
                            'html': ''}
             elif field.getType().lower().find('datetime') > -1:
-                value = field.get(self.context)
-                import pdb;pdb.set_trace()
+                value = field.getAccessor(self.context)()
                 ret = {'fieldName': fieldname,
                        'mode': 'structure',
                        'html': self.ulocalized_time(value, long_format=True)
