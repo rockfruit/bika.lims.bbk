@@ -446,24 +446,31 @@ schema = BikaFolderSchema.copy() + Schema((
             description=_("Select which sticker to print when automatic sticker printing is enabled"),
         )
     ),
-    StringField('SmallStickerTemplate',
+    StringField('StickerWidth',
         schemata = "Stickers",
-        vocabulary = "getStickerTemplates",
-        default = "Code_128_1x48mm.pt",
-        widget = SelectionWidget(
-            format = 'select',
-            label = _("Small sticker"),
-            description = _("Select which sticker should be used as the 'small' sticker by default")
+        default='100mm',
+        required=1,
+        widget = StringWidget(
+            label=_("Sticker width"),
+            description=_("Enter CSS units for the sticker width (eg 100mm)"),
         )
     ),
-    StringField('LargeStickerTemplate',
+    StringField('StickerHeight',
         schemata = "Stickers",
-        vocabulary = "getStickerTemplates",
-        default = "Code_128_1x72mm.pt",
-        widget = SelectionWidget(
-            format = 'select',
-            label = _("Large sticker"),
-            description = _("Select which sticker should be used as the 'large' sticker by default")
+        default='90mm',
+        required=1,
+        widget = StringWidget(
+            label=_("Sticker height"),
+            description=_("Enter CSS units for the sticker height (eg 90mm)"),
+        )
+    ),
+    StringField('StickerMargin',
+        schemata = "Stickers",
+        default='1cm',
+        required=1,
+        widget = StringWidget(
+            label=_("Sticker margin"),
+            description=_("Enter CSS units for the sticker margin (eg 1cm)"),
         )
     ),
     PrefixesField('Prefixes',
