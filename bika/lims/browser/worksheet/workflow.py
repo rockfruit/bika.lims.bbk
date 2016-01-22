@@ -115,8 +115,7 @@ class WorksheetWorkflowAction(WorkflowAction):
                 ar_ids.sort()
                 for ar_id in ar_ids:
                     analyses = analyses_by_ar_id[ar_id]
-                    analyses.sort(cmp=lambda x,y:cmp(x.getRequestID(),
-                                                     y.getRequestID()))
+                    analyses.sort(cmp=lambda x,y:cmp(x.Title(), y.Title()))
                     for analysis in analyses:
                         # Double-check the state first
                         if (workflow.getInfoFor(analysis, 'worksheetanalysis_review_state') == 'unassigned'
