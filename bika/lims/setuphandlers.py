@@ -299,14 +299,15 @@ class BikaGenerator:
             mp = obj.manage_permission
             mp(permissions.ListFolderContents, ['Manager', 'LabManager', 'Member', 'LabClerk', 'Analyst', 'Sampler', 'Preserver'], 0)
             mp(permissions.View, ['Manager', 'LabManager', 'LabClerk', 'Member', 'Analyst', 'Sampler', 'Preserver'], 0)
-            mp(permissions.ModifyPortalContent, ['Manager', 'LabManager', 'Owner'], 0)
+            mp(permissions.ModifyPortalContent, ['Manager', 'LabManager', 'Owner', 'LabClerk'], 0)
             mp(AddSupplyOrder, ['Manager', 'LabManager', 'Owner', 'LabClerk'], 0)
             mp('Access contents information', ['Manager', 'LabManager', 'Member', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'Owner'], 0)
             obj.reindexObject()
             for contact in portal.clients.objectValues('Contact'):
                 mp = contact.manage_permission
                 mp(permissions.View, ['Manager', 'LabManager', 'LabClerk', 'Owner', 'Analyst', 'Sampler', 'Preserver'], 0)
-                mp(permissions.ModifyPortalContent, ['Manager', 'LabManager', 'Owner'], 0)
+                mp(permissions.ModifyPortalContent, ['Manager', 'LabManager', 'Owner', 'LabClerk'], 0)
+                mp(ManageLoginDetails, ['Manager', 'LabManager', 'LabClerk'], 0)
 
         # /worksheets folder permissions
         mp = portal.worksheets.manage_permission
