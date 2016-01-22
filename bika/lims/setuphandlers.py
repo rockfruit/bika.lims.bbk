@@ -198,7 +198,7 @@ class BikaGenerator:
         mp(AddInvoice, ['Manager', 'LabManager'], 1)
         mp(AddMethod, ['Manager', 'LabManager'], 1)
         mp(AddMultifile, ['Manager', 'LabManager', 'LabClerk'], 1)
-        mp(AddPricelist, ['Manager', 'Owner', 'LabManager'], 1)
+        mp(AddPricelist, ['Manager', 'Owner', 'LabManager', 'LabClerk'], 1)
         mp(AddSample, ['Manager', 'Owner', 'LabManager', 'LabClerk', 'Sampler'], 1)
         mp(AddSampleMatrix, ['Manager', 'Owner', 'LabManager', 'LabClerk'], 1)
         mp(AddSamplePartition, ['Manager', 'Owner', 'LabManager', 'LabClerk', 'Sampler'], 1)
@@ -232,7 +232,7 @@ class BikaGenerator:
         mp(ManageWorksheets, ['Manager', 'LabManager'], 1)
         mp(PostInvoiceBatch, ['Manager', 'LabManager', 'Owner'], 1)
 
-        mp(CancelAndReinstate, ['Manager', 'LabManager'], 0)
+        mp(CancelAndReinstate, ['Manager', 'LabManager', 'LabClerk'], 0)
 
         mp(VerifyOwnResults, ['Manager', ], 1)
         mp(ViewRetractedAnalyses, ['Manager', 'LabManager', 'LabClerk', 'Analyst', ], 0)
@@ -382,11 +382,12 @@ class BikaGenerator:
         # /pricelists folder permissions
         mp = portal.pricelists.manage_permission
         mp(CancelAndReinstate, ['Manager', 'LabManager', 'LabClerk'], 0)
-        mp(ManagePricelists, ['Manager', 'LabManager', 'Owner'], 1)
+        mp(ManagePricelists, ['Manager', 'LabManager', 'Owner', 'LabClerk'], 1)
         mp(permissions.ListFolderContents, ['Member'], 1)
-        mp(permissions.AddPortalContent, ['Manager', 'LabManager', 'Owner'], 0)
-        mp(permissions.DeleteObjects, ['Manager', 'LabManager', 'Owner'], 0)
-        mp(permissions.View, ['Manager', 'LabManager'], 0)
+        mp(permissions.AddPortalContent, ['Manager', 'LabManager', 'Owner', 'LabClerk'], 0)
+        mp(permissions.ModifyPortalContent, ['Manager', 'LabManager', 'Owner', 'LabClerk'], 0)
+        mp(permissions.DeleteObjects, ['Manager', 'LabManager', 'Owner', 'LabClerk'], 0)
+        mp(permissions.View, ['Manager', 'LabManager', 'LabClerk'], 0)
         portal.pricelists.reindexObject()
 
         # /methods folder permissions
