@@ -186,16 +186,6 @@ def formatDecimalMark(value, decimalmark='.'):
         Assumes that 'value' uses '.' as decimal mark and ',' as
         thousand mark.
     """
-
-    try:
-        value = float(value)
-    except ValueError:
-        return value
-
-    # continuing with 'nan' result will cause formatting to fail.
-    if math.isnan(value):
-        return value
-
     rawval = value
     try:
         if decimalmark == ',':
