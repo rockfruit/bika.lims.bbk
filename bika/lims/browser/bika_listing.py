@@ -87,6 +87,8 @@ class WorkflowAction:
                                            self.context.absolute_url())
                 self.request.response.redirect(self.destination_url)
                 return None, None
+            if type(action) in (list, tuple):
+                action = action[0]
         return (action, came_from)
 
     def _get_selected_items(self, full_objects = True):
