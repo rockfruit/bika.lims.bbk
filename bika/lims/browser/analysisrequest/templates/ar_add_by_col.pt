@@ -19,6 +19,9 @@
         .copybutton {
             cursor: pointer;
         }
+        tr.service_selector td {
+            border-bottom: 1px solid #ddd;
+        }
     </style>
     <table summary="Add analysis requests"
            class="listing analysisrequest add nosort"
