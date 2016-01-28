@@ -8,15 +8,15 @@ function AnalysisRequestPublishView() {
 
     // Allowed Paper sizes and default margins, in mm
     var papersize_default = "A4";
-    var default_margins = [20, 20, 30, 20];
+    var default_margins = [20, 10, 20, 10];
     var papersize = {
         'A4': {
                 dimensions: [210, 297],
-                margins:    [20, 20, 30, 20] },
+                margins:    [20, 10, 20, 10] },
 
         'letter': {
                 dimensions: [216, 279],
-                margins:    [20, 20, 30, 20] },
+                margins:    [20, 10, 20, 10] },
     };
 
     /**
