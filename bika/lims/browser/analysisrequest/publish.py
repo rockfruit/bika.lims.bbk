@@ -446,14 +446,16 @@ class AnalysisRequestPublishView(BrowserView):
     def _lab_data(self):
         portal = self.context.portal_url.getPortalObject()
         lab = self.context.bika_setup.laboratory
-        lab_address = lab.getPostalAddress() \
+        rawaddress = lab.getPostalAddress() \
                         or lab.getBillingAddress() \
                         or lab.getPhysicalAddress()
-        if lab_address:
-            _keys = ['address', 'city', 'state', 'zip', 'country']
-            _list = ["<div>%s</div>" % lab_address.get(v) for v in _keys
-                     if lab_address.get(v)]
-            lab_address = "".join(_list)
+        if rawaddress:
+            lab_address = \
+                "<div>%s</div>" % rawaddress['address'] + \
+                "<div>%s %s</div>" % (rawaddress['city'],
+                                      rawaddress['zip']) + \
+                "<div>%s</div>" % rawaddress['state'] + \
+                "<div>%s</div>" % rawaddress['country']
         else:
             lab_address = ''
 
