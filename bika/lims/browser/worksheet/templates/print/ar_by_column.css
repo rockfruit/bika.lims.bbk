@@ -1,8 +1,24 @@
-.barcode-container {
-    width:100%;
+div.header {
+    clear:both;
 }
-div#header .barcode {
+div.ws_title {
+    text-align:center;;
+}
+div.header .barcode {
     float: right;
+    clear:both
+}
+.header-left {
+    float:left;
+}
+.header-left h1 {
+    float:left;
+    padding:0;
+    margin:5px 0 5px 5px;;
+}
+.header-right {
+    float:right;
+    text-align:center;
 }
 div.worksheet {
     font-size:0.8em;
@@ -16,36 +32,51 @@ div.worksheet h1 {
     font-size:1.7em;
 }
 div.subheader {
-    padding: 10px 0;
+    padding: 5px 0;
+    text-align:left
+}
+div.subheader h1 {
+    padding: 5px 0 5px 0;
+}
+div.subheader div {
+    font-size: 6pt;
 }
 div.content {
     padding:20px 0;
     font-size:0.85em;
-    border-top:1px solid #333;
 }
 div.content table {
+    border-collapse:collapse;
 }
-div.content table thead th.requestid,
+
+div.content table thead th.requestid {
+  padding:5px 32px 5px 32px;
+}
+
+div.content table thead th,
 div.content table tbody th {
-    padding:0 5px 0 0;
     text-align:left;
     width:100px;
+    border:1px solid #888;
 }
+div.content table tbody th,
 div.content table tbody td {
     padding:4px 0;
     border:1px solid #888;
     text-align:center;
 }
 div.content table tbody td.result {
-    padding:15px;
+    padding:0px !important;
+    margin:0px !important;
+    height:2.5em !important;
 }
 div.content table tbody th.analyses {
-    padding:20px 0 10px 0;
-    font-size:1.2em;
+    padding:10px 0 10px 0;
+    font-size:1.4em;
 }
 div.content table tbody td.no-result {
     padding:0;
-    border:1px solid #fff;
+    border:1px solid #888;
 }
 div.content table tbody td.no-result div {
     position:relative;
@@ -60,14 +91,29 @@ div.content table tbody td.no-result div:before {
     right:0;
     left:0;
     bottom:0;
-    border: 99999px #dcdcdc solid;
+    border: 99999px #dedede solid;
     z-index: 0;
 }
 div.content table tbody td.no-result div * {
     position: relative;
     z-index: 1;
 }
-
+table.fields,
+table.fields tr,
+table.fields td {
+    margin:0;
+    padding:0;
+    width:100%;
+    height:100%;
+    border-collapse:collapse;
+}
+td.field {
+    padding:0px !important;
+    vertical-align:top;
+    font-size:5pt;
+    border:none !important;
+    margin-top:-2px;
+}
 @media print {
     div.worksheet {
     }
@@ -79,6 +125,7 @@ div.content table tbody td.no-result div * {
     }
     div.content table thead th.requestid {
         text-align:left;
+        padding:2px !important;
     }
     div.content table thead th.requestid,
     div.content table tbody th {

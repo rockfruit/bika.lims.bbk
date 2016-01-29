@@ -395,6 +395,17 @@ class PrintView(BrowserView):
                   'specs': {},
                   'formatted_specs': ''}
 
+        # Collect title/keyword of non-hidden fields
+        # (interims and result are considered 'fields')
+        fields = []
+        for interim in analysis.getInterimFields():
+            if interim.get('hidden', False):
+                continue
+            fields.append({'title': interim['title'],
+                           'keyword': interim['keyword']})
+        fields.append({'title': 'Result', 'keyword': 'Result'})
+        andict['fields'] = fields
+
         andict['refsample'] = analysis.getSample().id \
                             if analysis.portal_type == 'Analysis' \
                             else '%s - %s' % (analysis.aq_parent.id, analysis.aq_parent.Title())
@@ -497,22 +508,32 @@ class PrintView(BrowserView):
             return {}
 
         if ar.portal_type == "AnalysisRequest":
+            cultivar = ar.Schema().getField('Cultivar').get(ar)
             return {'obj': ar,
                     'id': ar.getRequestID(),
                     'date_received': self.ulocalized_time(ar.getDateReceived(), long_format=0),
                     'date_sampled': self.ulocalized_time(ar.getDateSampled(), long_format=0),
+                    'samplingdate': self.ulocalized_time(ar.getSamplingDate(), long_format=0),
+                    'cultivar': cultivar.Title() if cultivar else '',
+                    'tank': ar.Schema().getField('Tank').get(ar),
                     'url': ar.absolute_url(),}
         elif ar.portal_type == "ReferenceSample":
             return {'obj': ar,
                     'id': ar.id,
                     'date_received': self.ulocalized_time(ar.getDateReceived(), long_format=0),
                     'date_sampled': self.ulocalized_time(ar.getDateSampled(), long_format=0),
+                    'samplingdate': self.ulocalized_time(ar.getSamplingDate(), long_format=0),
+                    'cultivar': '',
+                    'tank': '',
                     'url': ar.absolute_url(),}
         else:
             return {'obj': ar,
                     'id': ar.id,
                     'date_received': "",
                     'date_sampled': "",
+                    'samplingdate': "",
+                    'cultivar': '',
+                    'tank': '',
                     'url': ar.absolute_url(),}
 
 
