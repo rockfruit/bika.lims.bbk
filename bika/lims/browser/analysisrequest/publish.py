@@ -46,9 +46,10 @@ class AnalysisRequestPublishView(BrowserView):
 
     @property
     def _DEFAULT_TEMPLATE(self):
+        return("bbk:Multi_AR_default.pt")
         registry = getUtility(IRegistry)
-        return registry.get(
-            'bika.lims.analysisrequest.default_arreport_template', 'default.pt')
+        key = 'bika.lims.analysisrequest.default_arreport_template'
+        return registry.get(key, 'default.pt')
 
     def __call__(self):
         if self.context.portal_type == 'AnalysisRequest':
@@ -63,21 +64,120 @@ class AnalysisRequestPublishView(BrowserView):
             self.destination_url = self.request.get_header("referer",
                                    self.context.absolute_url())
 
-        # Group ARs by client
-        groups = {}
-        for ar in self._ars:
-            idclient = ar.aq_parent.id
-            if idclient not in groups:
-                groups[idclient] = [ar]
-            else:
-                groups[idclient].append(ar)
-        self._arsbyclient = [group for group in groups.values()]
+        ######################
+        # BBK Does not want to render any JS, nor preview the publication.
+        # Just create PDFs and send them, immediately.
+        # They also do not care about publication preference;
+        # all clients receive email with pdf attached.
+        ######################
 
-        # Do publish?
-        if self.request.form.get('publish', '0') == '1':
-            self.publishFromPOST()
+        lab = self.context.bika_setup.laboratory
+        wf = self.context.portal_workflow
+
+        clientgroups = self.group_ars_by_client(self._ars)
+        for client_group in clientgroups.values():
+            recipientgroups = self.group_ars_by_recipients(client_group)
+            for recip_group in recipientgroups.values():
+                to = recip_group['to']
+                addrs = [to] + recip_group['cc']
+                ars = recip_group['ars']
+                # Break into chunks according to BatchEmail setting
+                be = self.context.bika_setup.getBatchEmail()
+                splitlists = [ars[i:i+be] for i in range(0, len(ars), be)]
+                self.arspage = splitlists
+                # Render HTML now
+                template = self._DEFAULT_TEMPLATE
+                template_fn = self.get_template_filename(template)
+                html = ViewPageTemplateFile(template_fn)(self)
+                # find css
+                css_fn = template_fn.replace(".pt", ".css")
+                # Create PDF
+                # pdf_fn = tempfile.mktemp(suffix=".pdf")
+                pdf = createPdf(html, css=css_fn)
+                # Create a new mime_msg object
+                mime_msg = MIMEMultipart('related')
+                arids = ", ".join([ar.Title() for ar in ars])
+                subject = "Results: %s" % arids
+                mime_msg['Subject'] = subject
+                mime_msg['From'] = formataddr((encode_header(lab.getName()),
+                                               lab.getEmailAddress()))
+                mime_msg.preamble = 'This is a multi-part MIME message.'
+                part1 = MIMEText(
+                    "Results are attached to this email for: %s" % arids)
+                mime_msg.attach(part1)
+                mime_msg['To'] = to
+                attachPdf(mime_msg, pdf, "report")
+                msg_string = mime_msg.as_string()
+
+                try:
+                    host = getToolByName(ar, 'MailHost')
+                    res = host.send(msg_string, mto=addrs, immediate=True)
+                    # Set status to prepublished/published/republished
+                    for ar in ars:
+                        status = wf.getInfoFor(ar, 'review_state')
+                        transitions = {'verified': 'publish',
+                                       'published' : 'republish'}
+                        transition = transitions.get(status, 'prepublish')
+                        try:
+                            wf.doActionFor(ar, transition)
+                            ar.setDatePublished(DateTime())
+                        except WorkflowException:
+                            pass
+                except SMTPServerDisconnected as msg:
+                    logger.warn("SMTPServerDisconnected: %s." % msg)
+                except SMTPRecipientsRefused as msg:
+                    raise WorkflowException(str(msg))
+
+            self.request.RESPONSE.redirect(
+                self.request.get('ar.publish.view.referrer',
+                                 self.context.absolute_url())
+            )
+
+    def group_ars_by_client(self, ars):
+        # Return ARs grouped by client ID
+        clientgroups = {}
+        for ar in ars:
+            client_id = ar.aq_parent.id
+            if client_id not in clientgroups:
+                clientgroups[client_id] = [ar]
+            else:
+                clientgroups[client_id].append(ar)
+        return clientgroups
+
+    def group_ars_by_recipients(self, ars):
+        # ARs who share common recipient addresses will be grouped together
+        recipientgroups = {}
+        for ar in ars:
+            contact = ar.getContact()
+            to = formataddr((contact.Title(),
+                            contact.getEmailAddress()))
+            addresses = [contact.getEmailAddress()]
+            cc = []
+            for contact in ar.getCCContact():
+                cc.append(formataddr((contact.Title(),
+                                     contact.getEmailAddress())))
+                addresses.append(contact.getEmailAddress())
+            addresses.sort()
+            key = ''.join(addresses)
+            if key not in recipientgroups:
+                recipientgroups[key] = {
+                    'to': to,
+                    'cc': cc,
+                    'ars': []}
+            recipientgroups[key]['ars'].append(ar)
+        return recipientgroups
+
+    def get_template_filename(self, template):
+        # check for package name
+        if ':' in template:
+            prefix, template = template.split(':')
         else:
-            return self.template()
+            prefix, template = 'bika.lims', template
+        # Check for existence
+        templates_dir = queryResourceDirectory('reports', prefix).directory
+        template_fn = os.path.join(templates_dir, template)
+        assert os.path.isfile(template_fn), "%s does not exist" % template_fn
+        return template_fn
 
     def showOptions(self):
         """ Returns true if the options top panel will be displayed
@@ -823,7 +923,7 @@ class AnalysisRequestPublishView(BrowserView):
             mime_msg['From'] = formataddr(
                 (encode_header(lab.getName()), lab.getEmailAddress()))
             mime_msg.preamble = 'This is a multi-part MIME message.'
-            msg_txt = MIMEText(results_html, _subtype='html')
+            msg_txt = "Results are attached to this email."
             mime_msg.attach(msg_txt)
 
             to = []
@@ -865,7 +965,7 @@ class AnalysisRequestPublishView(BrowserView):
             mime_msg['From'] = formataddr(
             (encode_header(lab.getName()), lab.getEmailAddress()))
             mime_msg.preamble = 'This is a multi-part MIME message.'
-            msg_txt = MIMEText(results_html, _subtype='html')
+            msg_txt = "Results are attached to this email."
             mime_msg.attach(msg_txt)
             mime_msg['To'] = formatted
 
