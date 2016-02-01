@@ -106,6 +106,7 @@ class BatchFolderExportCSV(InvoiceBatchInvoicesView):
                                    invoice.getClient().getAccountNumber(),
                                    invoice.getClient().getPhone(),
                                    invoice.getInvoiceDate().strftime('%Y-%m-%d'),
+                                   invoice.getTotal(),
                                    ]
             csv_rows.append(invoice_info_header)
             # Obtaining and sorting all analysis items. These analysis are saved inside a list to add later
