@@ -45,6 +45,11 @@ class InvoiceBatch(BaseFolder):
     displayContentsTab = False
     schema = schema
 
+    _at_rename_after_creation = True
+    def _renameAfterCreation(self, check_auto_id=False):
+        from bika.lims.idserver import renameAfterCreation
+        renameAfterCreation(self)
+
     security.declareProtected(ManageInvoices, 'invoices')
 
     def invoices(self):
@@ -148,6 +153,7 @@ def ObjectModifiedEventHandler(instance, event):
         orders = instance.portal_catalog(query)
         # Make list of clients from found ARs and Orders
         clients = {}
+        import pdb;pdb.set_trace()
         for rs in (ars, orders):
             for p in rs:
                 obj = p.getObject()
