@@ -128,10 +128,7 @@ class AnalysisRequestPublishView(BrowserView):
                 except SMTPRecipientsRefused as msg:
                     raise WorkflowException(str(msg))
 
-            self.request.RESPONSE.redirect(
-                self.request.get('ar.publish.view.referrer',
-                                 self.context.absolute_url())
-            )
+            self.request.RESPONSE.redirect(self.request['HTTP_REFERER'])
 
     def group_ars_by_client(self, ars):
         # Return ARs grouped by client ID
