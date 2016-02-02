@@ -121,6 +121,7 @@ class AnalysisRequestPublishView(BrowserView):
                         try:
                             wf.doActionFor(ar, transition)
                             ar.setDatePublished(DateTime())
+                            ar.reindexObject(idxs=['getDatePublished'])
                         except WorkflowException:
                             pass
                 except SMTPServerDisconnected as msg:
