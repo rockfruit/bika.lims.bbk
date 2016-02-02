@@ -52,21 +52,21 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     ComputedField('Subtotal',
-        expression='context.getSubtotal()',
+        expression='context._getSubtotal()',
         widget=ComputedWidget(
             label=_("Subtotal"),
             visible=False,
         ),
     ),
     ComputedField('VATAmount',
-        expression='context.getVATAmount()',
+        expression='context._getVATAmount()',
         widget=ComputedWidget(
             label=_("VAT Total"),
             visible=False,
         ),
     ),
     ComputedField('Total',
-        expression='context.getTotal()',
+        expression='context._getTotal()',
         widget=ComputedWidget(
             label=_("Total"),
             visible=False,
@@ -112,23 +112,25 @@ class Invoice(BaseFolder):
         """ Return the Invoice Id as title """
         return safe_unicode(self.getId()).encode('utf-8')
 
-    security.declareProtected(View, 'getSubtotal')
+    security.declareProtected(View, '_getSubtotal')
 
-    def getSubtotal(self):
+    def _getSubtotal(self):
         """ Compute Subtotal """
-        return sum([float(obj['Subtotal']) for obj in self.invoice_lineitems])
+        sub = sum([Decimal("%.02f"%obj['Subtotal']) for obj in self.invoice_lineitems])
+        return sub
 
-    security.declareProtected(View, 'getVATAmount')
+    security.declareProtected(View, '_getVATAmount')
 
-    def getVATAmount(self):
+    def _getVATAmount(self):
         """ Compute VAT """
         return Decimal(self.getTotal()) - Decimal(self.getSubtotal())
 
-    security.declareProtected(View, 'getTotal')
+    security.declareProtected(View, '_getTotal')
 
-    def getTotal(self):
+    def _getTotal(self):
         """ Compute Total """
-        return sum([float(obj['Total']) for obj in self.invoice_lineitems])
+        tot = sum([Decimal("%.02f"%obj['Total']) for obj in self.invoice_lineitems])
+        return tot
 
     security.declareProtected(View, 'getInvoiceSearchableText')
 

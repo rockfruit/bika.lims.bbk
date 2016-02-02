@@ -111,6 +111,7 @@
          category="document_actions"
          condition_expr="python: context.REQUEST.get('verified','') and context.portal_workflow.getInfoFor(context,'review_state') in ['verified', 'published'] and not context.getInvoice()"
          link_target=""
+         icon_expr="string:++resource++bika.lims.images/invoice_big.png"
          url_expr="string:${object_url}/invoice_create"
          i18n:attributes="title"
          visible="True">
@@ -121,7 +122,7 @@
          action_id="invoice_print"
          category="document_actions"
          condition_expr="context/REQUEST/verified|nothing"
-         icon_expr="string:${object_url}/print_icon.png"
+         icon_expr="string:++resource++bika.lims.images/print_document.png"
          link_target=""
          url_expr="string:${object_url}/invoice_print"
          i18n:attributes="title"

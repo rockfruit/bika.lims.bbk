@@ -26,4 +26,19 @@
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
+    <browser:page
+      for="bika.lims.interfaces.IInvoiceBatch"
+      name="invoicebatch_print_summary"
+      class=".invoicebatch.PrintSummary"
+      permission="bika.lims.ManageInvoices"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+    <browser:page
+      for="bika.lims.interfaces.IInvoiceBatch"
+      name="invoicebatch_print_all"
+      class=".invoicebatch.PrintAllInvoices"
+      permission="bika.lims.ManageInvoices"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
 </configure>

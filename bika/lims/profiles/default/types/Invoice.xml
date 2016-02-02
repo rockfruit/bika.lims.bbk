@@ -26,7 +26,7 @@
          action_id="print"
          category="document_actions"
          condition_expr=""
-         icon_expr="string:${object_url}/print_icon.png"
+         icon_expr="string:++resource++bika.lims.images/print_document.png"
          link_target=""
          url_expr="string:${object_url}/print"
          i18n:attributes="title"

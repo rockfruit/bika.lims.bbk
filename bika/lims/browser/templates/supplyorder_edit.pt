@@ -1,12 +1,12 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:tal="http://xml.zope.org/namespaces/tal"
       xmlns:metal="http://xml.zope.org/namespaces/metal"
-        metal:use-macro="here/main_template/macros/master"
-        i18n:domain="bika">
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="bika">
 
 <head>
     <metal:block fill-slot="javascript_head_slot"
-            tal:define="portal context/@@plone_portal_state/portal;">
+                 tal:define="portal context/@@plone_portal_state/portal;">
         <script type="text/javascript"
                 tal:attributes="src python:portal.absolute_url() + '/bika_widgets/datetimewidget.js'"></script>
         <script type="text/javascript"
@@ -55,9 +55,9 @@
                         <td class="center item_vat" tal:content="product/vat"></td>
                         <td class="number">
                             <input type="text" class="quantity numeric"
-                                    tal:attributes="name string:product_${product/id};
+                                   tal:attributes="name string:product_${product/id};
                                     value product/quantity;
-                                    data-product_title product/title" />
+                                    data-product_title product/title"/>
                         </td>
                         <td class="currency item_total" tal:content="product/total"></td>
                     </tr>

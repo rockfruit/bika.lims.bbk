@@ -1,16 +1,47 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
-	xmlns:tal="http://xml.zope.org/namespaces/tal"
-	xmlns:metal="http://xml.zope.org/namespaces/metal"
-	xmlns:i18n="http://xml.zope.org/namespaces/i18n"
-	metal:use-macro="here/print_template/macros/master"
-	i18n:domain="bika">
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      i18n:domain="bika">
 
-	<body>
+<head>
+    <link rel="stylesheet" type="text/css" media="all" href=""
+          tal:attributes="href string:${view/portal_url}/bika_invoice.css"/>
+    <link rel="stylesheet" type="text/css" media="all" href=""
+          tal:attributes="href string:${view/portal_url}/++resource++bika.lims.css/print.css"/>
+    <title tal:content="python:context.title"/>
+</head>
 
-		<metal:content fill-slot="content">
-			<span tal:replace="structure view/content"></span>
-		</metal:content>
+<body>
 
-	</body>
+<div style="float:left">
+    <img tal:attributes="src python:view.portal_url + '/logo_print.png'"/>
+</div>
+<div style="float:right">
+    <table class="invoice-header">
+        <tbody>
+        <tr>
+            <th i18n:translate="">Cient</th>
+            <td tal:content="view/context/aq_parent/Title"></td>
+        </tr>
+        <tr>
+            <th i18n:translate="">Order Date</th>
+            <td tal:content="view/orderDate"></td>
+        </tr>
+        <tr>
+            <th i18n:translate="">Contact</th>
+            <td tal:content="view/contact"></td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <h1 tal:content="view/context/Title"/>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
 
+<span tal:replace="structure view/content"></span>
+
+</body>
 </html>

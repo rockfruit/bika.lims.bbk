@@ -1,0 +1,63 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      i18n:domain="bika">
+
+<head>
+    <link rel="stylesheet" type="text/css" media="all" href=""
+          tal:attributes="href string:${view/portal_url}/bika_invoice.css"/>
+    <link rel="stylesheet" type="text/css" media="all" href=""
+          tal:attributes="href string:${view/portal_url}/++resource++bika.lims.css/print.css"/>
+    <title tal:content="python:context.title"/>
+</head>
+
+<body>
+<div style="float:left">
+    <img tal:attributes="src python:view.portal_url + '/logo_print.png'"/>
+</div>
+<div style="float:right;padding: 25px 0;">
+    <span style="font-weight:bold;font-size:2em;" tal:content="context/title"/>
+    <br/>
+    <span style="font-weight:bold;font-size:1.45em;" i18n:translate="">
+        From
+        <span i18n:name="startdate" tal:replace="python:view.ulocalized_time(context.getBatchStartDate())"/>
+        to
+        <span i18n:name="enddate" tal:replace="python:view.ulocalized_time(context.getBatchStartDate())"/>
+    </span>
+</div>
+
+<table class="invoice-items" summary="Invoices" style="font-size:90%">
+    <thead>
+    <tr>
+        <th i18n:translate="">Invoice Number</th>
+        <th i18n:translate="">Client</th>
+        <th i18n:translate="">Invoice Date</th>
+        <th i18n:translate="">Subtotal</th>
+        <th i18n:translate="">VAT</th>
+        <th i18n:translate="">Total</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr tal:repeat="item view/items">
+        <td tal:content="item/id"></td>
+        <td tal:content="item/client"></td>
+        <td tal:content="item/invoicedate"></td>
+        <td>
+            <span tal:content="python:view.getPreferredCurrencyAbreviation()">R</span>
+            <span tal:content="item/subtotal">0.00</span>
+        </td>
+        <td>
+            <span tal:content="python:view.getPreferredCurrencyAbreviation()">R</span>
+            <span tal:content="item/vatamount">0.00</span>
+        </td>
+        <td>
+            <span tal:content="python:view.getPreferredCurrencyAbreviation()">R</span>
+            <span tal:content="item/total">0.00</span>
+        </td>
+    </tr>
+    </tbody>
+</table>
+</body>
+
+</html>

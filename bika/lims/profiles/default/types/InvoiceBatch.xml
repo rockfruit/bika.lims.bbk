@@ -49,18 +49,29 @@
     <permission value="Modify portal content"/>
  </action>
 
- <!--
- <action title="Print batch"
-         action_id="printbatch"
-         category="object"
+ <action title="Print Summary"
+         action_id="invoicebatch_print_summary"
+         category="document_actions"
          condition_expr=""
-         icon_expr=""
+         icon_expr="string:++resource++bika.lims.images/print_document.png"
          link_target=""
-         url_expr="string:${object_url}/invoicebatch_print"
+         url_expr="string:${object_url}/invoicebatch_print_summary"
          i18n:attributes="title"
          visible="True">
     <permission value="BIKA: Manage Invoices"/>
- </action-->
+ </action>
+
+ <action title="Print All Invoices"
+         action_id="invoicebatch_print_all"
+         category="document_actions"
+         condition_expr=""
+         icon_expr="string:++resource++bika.lims.images/print_many.png"
+         link_target=""
+         url_expr="string:${object_url}/invoicebatch_print_all"
+         i18n:attributes="title"
+         visible="True">
+    <permission value="BIKA: Manage Invoices"/>
+ </action>
 
  <action title="Export Batch To CSV"
          action_id="invoicebatch_export_csv"

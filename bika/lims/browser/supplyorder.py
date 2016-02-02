@@ -7,12 +7,14 @@ from operator import itemgetter, methodcaller
 
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser import BrowserView
-from bika.lims.utils import t
+from bika.lims.utils import t, createPdf
 
 
 class View(BrowserView):
 
     template = ViewPageTemplateFile('templates/supplyorder_view.pt')
+    content = ViewPageTemplateFile('templates/supplyorder_content.pt')
+
     title = _('Supply Order')
 
     def __call__(self):
@@ -74,7 +76,7 @@ class EditView(BrowserView):
         # Collect the products
         products = setup.bika_labproducts.objectValues('LabProduct')
         # Handle for submission and regular request
-    	if 'submit' in request:
+        if 'submit' in request:
             portal_factory = getToolByName(context, 'portal_factory')
             context = portal_factory.doCreate(context, context.id)
             context.processForm()
@@ -129,6 +131,15 @@ class EditView(BrowserView):
 class PrintView(View):
 
     template = ViewPageTemplateFile('templates/supplyorder_print.pt')
+    content = ViewPageTemplateFile('templates/supplyorder_content.pt')
 
     def __call__(self):
-        return View.__call__(self)
+        # Render the HTML which will be used to create the PDF.
+        html = super(PrintView, self).__call__()
+        # createPdf returns PDF data
+        data = createPdf(html)
+        # So we let the browser deal with the PDF as it pleases.
+        setheader = self.request.RESPONSE.setHeader
+        setheader('Content-Type', 'application/pdf')
+        self.request.RESPONSE.write(data)
+
