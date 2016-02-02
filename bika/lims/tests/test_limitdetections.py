@@ -337,7 +337,6 @@ class TestLimitDetections(BikaFunctionalTestCase):
             self.assertEqual(an.isLowerDetectionLimit(), case['isldl'])
             self.assertEqual(an.isUpperDetectionLimit(), case['isudl'])
             self.assertEqual(float(an.getResult()), case['expresult'])
-            #import pdb; pdb.set_trace()
             self.assertEqual(an.getFormattedResult(), case['expformattedresult'])
 
     def test_ar_manageresults_limitdetections(self):
