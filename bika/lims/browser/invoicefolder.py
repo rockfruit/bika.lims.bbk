@@ -1,4 +1,4 @@
-from bika.lims import bikaMessageFactory as _
+from bika.lims import bikaMessageFactory as _, INVOICE_BATCH_TYPES
 from bika.lims.utils import t
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.permissions import AddInvoice
@@ -29,6 +29,7 @@ class InvoiceFolderContentsView(BikaListingView):
             'title': {'title': _('Title')},
             'start': {'title': _('Start Date')},
             'end': {'title': _('End Date')},
+            'types': {'title': _('Object types invoiced')}
         }
         self.review_states = [
             {
@@ -36,14 +37,14 @@ class InvoiceFolderContentsView(BikaListingView):
                 'contentFilter': {'cancellation_state': 'active'},
                 'title': _('Active'),
                 'transitions': [{'id': 'cancel'}],
-                'columns': ['title', 'start', 'end'],
+                'columns': ['title', 'start', 'end', 'types'],
             },
             {
                 'id': 'cancelled',
                 'contentFilter': {'cancellation_state': 'cancelled'},
                 'title': _('Cancelled'),
                 'transitions': [{'id': 'reinstate'}],
-                'columns': ['title', 'start', 'end'],
+                'columns': ['title', 'start', 'end', 'types'],
             },
         ]
 
@@ -76,5 +77,7 @@ class InvoiceFolderContentsView(BikaListingView):
             items[x]['replace']['title'] = title_link
             items[x]['start'] = self.ulocalized_time(obj.getBatchStartDate())
             items[x]['end'] = self.ulocalized_time(obj.getBatchEndDate())
+            types = obj.getTypesToInvoice()
+            items[x]['types'] = INVOICE_BATCH_TYPES.getValue(types)
 
         return items

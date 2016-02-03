@@ -5,6 +5,7 @@ from Products.CMFCore.utils import getToolByName
 from plone.resource.utils import queryResourceDirectory
 from zope.i18n.locales import locales
 
+from bika.lims.config import INVOICE_BATCH_TYPES
 from bika.lims import bikaMessageFactory as _, t
 from bika.lims import logger
 from bika.lims.browser import BrowserView
@@ -27,7 +28,8 @@ class InvoiceBatchInvoicesView(BikaListingView):
         super(InvoiceBatchInvoicesView, self).__init__(context, request)
         self.contentFilter = {}
         self.title = context.Title()
-        self.description = ""
+        types = context.getTypesToInvoice()
+        self.description = INVOICE_BATCH_TYPES.getValue(types)
         self.show_sort_column = False
         self.show_select_row = False
         self.show_select_all_checkbox = False

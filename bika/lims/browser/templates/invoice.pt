@@ -64,19 +64,16 @@
             <tal:item>
                 <tr>
                     <td tal:content="item/invoiceDate"></td>
-                    <td class="text" tal:content="item/description"></td>
-                    <td>
-                        <a tal:attributes="href item/orderNoURL"
-                           tal:content="item/orderNo"></a>
+                    <td class="text" tal:content="item/description"/>
+                    <td tal:content="item/orderNo"/>
+                    <td class="currency">
+                        <span tal:content="item/Subtotal">0.00</span>
                     </td>
                     <td class="currency">
-                        <span tal:content="item/subtotal">0.00</span>
+                        <span tal:content="item/VATAmount">0.00</span>
                     </td>
                     <td class="currency">
-                        <span tal:content="item/vatamount">0.00</span>
-                    </td>
-                    <td class="currency">
-                        <span tal:content="item/total">0.00</span>
+                        <span tal:content="item/Total">0.00</span>
                     </td>
                 </tr>
             </tal:item>
