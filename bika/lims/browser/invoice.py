@@ -45,11 +45,6 @@ class InvoiceView(BrowserView):
                 'Total': "%.02f"%(float(item.get('Total', '0'))),
             }
             url = ''
-            if item.get('AnalysisRequest', False):
-                url = item['AnalysisRequest'].absolute_url()
-            elif item.get('SupplyOrder', ''):
-                url = item['SupplyOrder'].absolute_url()
-            invoice_data['orderNoURL'] = url
             items.append(invoice_data)
         return items
 

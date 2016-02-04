@@ -85,32 +85,33 @@ class InvoiceBatch(BaseFolder):
         invoice = _createObjectByType("Invoice", self, invoice_id)
         invoice.edit(Client=client_uid, InvoiceDate=DateTime())
         invoice.processForm()
-        invoice.invoice_lineitems = []
+        lineitems = []
         for item in items:
             lineitem = InvoiceLineItem()
             if item.portal_type == 'AnalysisRequest':
                 lineitem['ItemDate'] = item.getDatePublished()
                 lineitem['OrderNumber'] = item.getRequestID()
-                lineitem['AnalysisRequest'] = item
+                lineitem['AnalysisRequest'] = item.id
                 lineitem['SupplyOrder'] = ''
-                sample = item.getSample()
-                samplepoint = sample.getSamplePoint()
-                samplepoint = samplepoint and samplepoint.Title() or ''
-                sampletype = sample.getSampleType()
-                sampletype = sampletype and sampletype.Title() or ''
-                lineitem['ItemDescription'] = sampletype + ' ' + samplepoint
+                # sample = item.getSample()
+                # samplepoint = sample.getSamplePoint()
+                # samplepoint = samplepoint and samplepoint.Title() or ''
+                # sampletype = sample.getSampleType()
+                # sampletype = sampletype and sampletype.Title() or ''
+                # lineitem['ItemDescription'] = sampletype + ' ' + samplepoint
             elif item.portal_type == 'SupplyOrder':
                 lineitem['ItemDate'] = item.getDateDispatched()
                 lineitem['OrderNumber'] = item.getOrderNumber()
                 lineitem['AnalysisRequest'] = ''
-                lineitem['SupplyOrder'] = item
-                products = item.folderlistingFolderContents()
-                products = [o.getProduct().Title() for o in products]
-                lineitem['ItemDescription'] = ', '.join(products)
+                lineitem['SupplyOrder'] = item.id
+                # products = item.folderlistingFolderContents()
+                # products = [o.getProduct().Title() for o in products]
+                # lineitem['ItemDescription'] = ', '.join(products)
             lineitem['Subtotal'] = item.getSubtotal()
             lineitem['VATAmount'] = item.getVATAmount()
             lineitem['Total'] = item.getTotal()
-            invoice.invoice_lineitems.append(lineitem)
+            lineitems.append(lineitem)
+        invoice.invoice_lineitems = lineitems
         invoice.reindexObject()
         return invoice
 
@@ -174,10 +175,14 @@ def ObjectModifiedEventHandler(instance, event):
         clients = {}
         for brain in brains:
             obj = brain.getObject()
-            uid = obj.aq_parent.UID()
-            if uid not in clients:
-                clients[uid] = []
-            clients[uid].append(obj)
+            key = obj.aq_parent.Title() + "__" + obj.aq_parent.UID()
+            if key not in clients:
+                clients[key] = []
+            clients[key].append(obj)
+        keys = clients.keys()
+        keys.sort()
         # Create an invoice for each client
-        for uid, items in clients.items():
+        for key in keys:
+            items = clients[key]
+            uid = key.split("__")[-1]
             instance.createInvoice(uid, items)

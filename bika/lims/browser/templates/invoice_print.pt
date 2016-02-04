@@ -62,12 +62,9 @@
     <tal:items repeat="item view/lineitems">
         <tal:item>
             <tr>
-                <td tal:content="item/invoiceDate"></td>
-                <td class="text" tal:content="item/description"></td>
-                <td>
-                    <a tal:attributes="href item/orderNoURL"
-                       tal:content="item/orderNo"></a>
-                </td>
+                <td tal:content="item/invoiceDate"/>
+                <td class="text" tal:content="item/description"/>
+                <td tal:content="item/orderNo"/>
                 <td class="currency">
                     <span tal:content="item/Subtotal">0.00</span>
                 </td>

@@ -23,7 +23,7 @@
         From
         <span i18n:name="startdate" tal:replace="python:view.ulocalized_time(context.getBatchStartDate())"/>
         to
-        <span i18n:name="enddate" tal:replace="python:view.ulocalized_time(context.getBatchStartDate())"/>
+        <span i18n:name="enddate" tal:replace="python:view.ulocalized_time(context.getBatchEndDate())"/>
     </span>
 </div>
 
