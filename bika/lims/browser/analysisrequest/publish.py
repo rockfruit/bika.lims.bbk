@@ -79,7 +79,7 @@ class AnalysisRequestPublishView(BrowserView):
             recipientgroups = self.group_ars_by_recipients(client_group)
             for recip_group in recipientgroups.values():
                 to = recip_group['to']
-                addrs = [to, 'Campbell <bbktest@rockfruit.co.za>'] + recip_group['cc']
+                addrs = [to, 'Campbell <naomi@bbk.co.za>'] + recip_group['cc']
                 ars = recip_group['ars']
                 # Break into chunks according to BatchEmail setting
                 be = self.context.bika_setup.getBatchEmail()
