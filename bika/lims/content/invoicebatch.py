@@ -81,10 +81,6 @@ class InvoiceBatch(BaseFolder):
     def createInvoice(self, client_uid, items):
         """ Creates an invoice for a client and a set of items
         """
-        invoice_id = self.generateUniqueId('Invoice')
-        invoice = _createObjectByType("Invoice", self, invoice_id)
-        invoice.edit(Client=client_uid, InvoiceDate=DateTime())
-        invoice.processForm()
         lineitems = []
         for item in items:
             lineitem = InvoiceLineItem()
@@ -93,24 +89,19 @@ class InvoiceBatch(BaseFolder):
                 lineitem['OrderNumber'] = item.getRequestID()
                 lineitem['AnalysisRequest'] = item.id
                 lineitem['SupplyOrder'] = ''
-                # sample = item.getSample()
-                # samplepoint = sample.getSamplePoint()
-                # samplepoint = samplepoint and samplepoint.Title() or ''
-                # sampletype = sample.getSampleType()
-                # sampletype = sampletype and sampletype.Title() or ''
-                # lineitem['ItemDescription'] = sampletype + ' ' + samplepoint
             elif item.portal_type == 'SupplyOrder':
                 lineitem['ItemDate'] = item.getDateDispatched()
                 lineitem['OrderNumber'] = item.getOrderNumber()
                 lineitem['AnalysisRequest'] = ''
                 lineitem['SupplyOrder'] = item.id
-                # products = item.folderlistingFolderContents()
-                # products = [o.getProduct().Title() for o in products]
-                # lineitem['ItemDescription'] = ', '.join(products)
             lineitem['Subtotal'] = item.getSubtotal()
             lineitem['VATAmount'] = item.getVATAmount()
             lineitem['Total'] = item.getTotal()
             lineitems.append(lineitem)
+        invoice_id = self.generateUniqueId('Invoice')
+        invoice = _createObjectByType("Invoice", self, invoice_id)
+        invoice.edit(Client=client_uid, InvoiceDate=DateTime())
+        invoice.processForm()
         invoice.invoice_lineitems = lineitems
         invoice.reindexObject()
         return invoice
