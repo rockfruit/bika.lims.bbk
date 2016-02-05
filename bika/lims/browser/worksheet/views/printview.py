@@ -1,4 +1,6 @@
 # coding=utf-8
+from operator import methodcaller, itemgetter
+
 from DateTime import DateTime
 from plone.resource.utils import iterDirectoriesOfType, queryResourceDirectory
 from Products.CMFCore.utils import getToolByName
@@ -70,6 +72,9 @@ class PrintView(BrowserView):
 
         # Generate PDF?
         if self.request.form.get('pdf', '0') == '1':
+            # Generate HTML for each worksheet selected,
+            for worksheet in self._worksheets:
+                pass  # TODO
             return self._flush_pdf()
         else:
             return self.template()
@@ -221,18 +226,23 @@ class PrintView(BrowserView):
                 'url': ws.absolute_url(),
                 'template_title': ws.getWorksheetTemplateTitle(),
                 'remarks': ws.getRemarks(),
-                'date_printed': self.ulocalized_time(DateTime(), long_format=1),
-                'date_created': self.ulocalized_time(ws.created(), long_format=1)}
+                'date_printed': self.ulocalized_time(
+                        DateTime(), long_format=1),
+                'date_created': self.ulocalized_time(
+                        ws.created(), long_format=1),
+                'ars': self._analyses_data(ws),
+                'createdby': self._createdby_data(ws),
+                'analyst': self._analyst_data(ws),
+                'printedby': self._printedby_data(ws),
+                }
 
         # Sub-objects
-        data['ars'] = self._analyses_data(ws)
-        data['createdby'] = self._createdby_data(ws)
-        data['analyst'] = self._analyst_data(ws)
-        data['printedby'] = self._printedby_data(ws)
-        ans = []
+        antitles = []
         for ar in data['ars']:
-            ans.extend([an['title'] for an in ar['analyses']])
-        data['analyses_titles'] = list(set(ans))
+            for analysis in ar['analyses']:
+                if analysis['title'] not in antitles:
+                    antitles.append(analysis['title'])
+        data['analyses_titles'] = antitles
 
         portal = self.context.portal_url.getPortalObject()
         data['portal'] = {'obj': portal,
@@ -282,83 +292,55 @@ class PrintView(BrowserView):
 
         return data
 
-    def _analyses_data(self, ws):
+    def _analyses_data(self, worksheet):
         """ Returns a list of dicts. Each dict represents an analysis
             assigned to the worksheet
         """
-        ans = ws.getAnalyses()
-        layout = ws.getLayout()
-        an_count = len(ans)
-        pos_count = 0
-        prev_pos = 0
-        requestids = []
-        ars = {}
-        samples = {}
-        clients = {}
-        for an in ans:
+        uc = getToolByName(self.context, 'uid_catalog')
+        layout = [s for s in worksheet.getLayout() if s['analysis_uid']]
+        ars = {}  # ar_id:[analysis dictionaries]
+        for slot in layout:
+            proxy = uc(UID=slot['analysis_uid'])
+            if not proxy:
+                continue
+            analysis = proxy[0].getObject()
             # Build the analysis-specific dict
-            if an.portal_type == "DuplicateAnalysis":
-                andict = self._analysis_data(an.getAnalysis())
-                andict['id'] = an.getReferenceAnalysesGroupID();
-                andict['obj'] = an;
+            if analysis.portal_type == "DuplicateAnalysis":
+                andict = self._analysis_data(analysis.getAnalysis())
+                andict['id'] = analysis.getReferenceAnalysesGroupID()
+                andict['obj'] = analysis
                 andict['type'] = "DuplicateAnalysis"
                 andict['reftype'] = 'd'
             else:
-                andict = self._analysis_data(an)
-
-            # Analysis position
-            pos = [slot['position'] for slot in layout \
-                if slot['analysis_uid'] == an.UID()][0]
-            # compensate for possible bad data (dbw#104)
-            if type(pos) in (list, tuple) and pos[0] == 'new':
-                pos = prev_pos
-            pos = int(pos)
-            prev_pos = pos
-
-            # This will allow to sort automatically all the analyses,
-            # also if they have the same initial position.
-            andict['tmp_position'] = (pos * 100) + pos_count
-            andict['position'] = pos
-            pos_count += 1
-
-            # Look for the analysis request, client and sample info and
-            # group the analyses per Analysis Request
-            reqid = andict['request_id']
-            if an.portal_type in ("ReferenceAnalysis", "DuplicateAnalysis"):
-                reqid = an.getReferenceAnalysesGroupID()
-
-            if reqid not in ars:
-                arobj = an.aq_parent
-                if an.portal_type == "DuplicateAnalysis":
-                    arobj = an.getAnalysis().aq_parent
-
-                ar = self._ar_data(arobj)
-                ar['client'] = self._client_data(arobj.aq_parent)
-                ar['sample'] = self._sample_data(an.getSample())
-                ar['analyses'] = []
-                ar['tmp_position'] = andict['tmp_position']
-                ar['position'] = andict['position']
-                if an.portal_type in ("ReferenceAnalysis", "DuplicateAnalysis"):
-                    ar['id'] = an.getReferenceAnalysesGroupID()
-                    ar['url'] = an.absolute_url()
-
+                andict = self._analysis_data(analysis)
+            if analysis.portal_type in (
+                    "ReferenceAnalysis", "DuplicateAnalysis"):
+                ar_id = analysis.getReferenceAnalysesGroupID()
             else:
-                ar = ars[reqid]
-                if (andict['tmp_position'] < ar['tmp_position']):
-                    ar['tmp_position'] = andict['tmp_position'];
-                    ar['position'] = andict['position']
+                ar_id = andict['request_id']
+            if ar_id not in ars:
+                if analysis.portal_type == "DuplicateAnalysis":
+                    ar = analysis.getAnalysis().aq_parent
+                else:
+                    ar = analysis.aq_parent
+                ardict = self._ar_data(ar)
+                ardict['client'] = self._client_data(ar.aq_parent)
+                ardict['sample'] = self._sample_data(analysis.getSample())
+                ardict['analyses'] = []
+                if analysis.portal_type in ("ReferenceAnalysis",
+                                            "DuplicateAnalysis"):
+                    ardict['id'] = analysis.getReferenceAnalysesGroupID()
+                    ardict['url'] = analysis.absolute_url()
+                ars[ar_id] = ardict
+            ars[ar_id]['analyses'].append(andict)
 
-            # Sort analyses by position
-            ans = ar['analyses']
-            ans.append(andict)
-            ans.sort(lambda x, y: cmp(x.get('tmp_position'), y.get('tmp_position')))
-            ar['analyses'] = ans
-            ars[reqid] = ar
-
-        ars = [ar for ar in ars.itervalues()]
-
-        # Sort analysis requests by position
-        ars.sort(lambda x, y: cmp(x.get('tmp_position'), y.get('tmp_position')))
+        # sort analyses by service title, to match the order in views
+        for i, ar in ars.items():
+            ar['analyses'] = sorted(ar['analyses'],
+                                    key=itemgetter('title'))
+        # sort ars by the request ID.
+        ars = sorted(ars.values(),
+                     key=itemgetter('id'))
         return ars
 
     def _analysis_data(self, analysis):
@@ -549,8 +531,7 @@ class PrintView(BrowserView):
             data['name'] = to_utf8(client.getName())
         return data
 
-
-    def _flush_pdf():
+    def _flush_pdf(self):
         """ Generates a PDF using the current layout as the template and
             returns the chunk of bytes.
         """
