@@ -43,13 +43,19 @@ class Export(BrowserView):
 
         # for looking up "cup" number (= slot) of ARs
         parent_to_slot = {}
+        parent_to_st = {}
+        parent_to_sid = {}
         layout = self.context.getLayout()
         for x in range(len(layout)):
             a_uid = layout[x]['analysis_uid']
             p_uid = uc(UID=a_uid)[0].getObject().aq_parent.UID()
             layout[x]['parent_uid'] = p_uid
             if not p_uid in parent_to_slot.keys():
+                parent = uc(UID=p_uid)[0].getObject()
+                sample = parent.getSample()
                 parent_to_slot[p_uid] = int(layout[x]['position'])
+                parent_to_sid[p_uid] = sample.getId()
+                parent_to_st[p_uid] = sample.getSampleType().Title()
 
         # write rows, one per PARENT
         header = [listname, options['method']]
@@ -66,8 +72,8 @@ class Export(BrowserView):
             cup = parent_to_slot[p_uid]
             tmprows.append([tray,
                             cup,
-                            p_uid,
-                            c_uid,
+                            parent_to_sid[p_uid],
+                            parent_to_st[p_uid],
                             options['dilute_factor'],
                             ""])
             ARs_exported.append(p_uid)
