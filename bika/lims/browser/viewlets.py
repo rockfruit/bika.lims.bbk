@@ -50,6 +50,8 @@ class NewVersionsViewlet(ViewletBase):
     def check_new_version(self):
         """Look for new updates at pypi
         """
+        self.has_new_version = False
+        return
         self.current_version = self.versions['bika.lims']
         if not self.current_version:
             self.has_new_version = False
